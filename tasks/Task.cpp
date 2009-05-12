@@ -57,7 +57,11 @@ int Task::watch(std::string name, int id, int mask)
 
 bool Task::configureHook()
 {
-    return m_driver.open(_device.get());
+    if (!m_driver.open(_device.get()))
+        return false;
+
+    getFileDescriptorActivity()->watch(m_driver.getFileDescriptor());
+    return true;
 }
 bool Task::startHook()
 {
