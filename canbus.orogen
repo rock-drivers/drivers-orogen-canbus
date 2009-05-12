@@ -1,0 +1,36 @@
+name "can"
+
+using_toolkit "dfki"
+using_library "canbus"
+toolkit do
+    load "canmessage.hh"
+    load "canTypes.hh"
+end
+
+task_context "Task" do
+    fd_driven
+    needs_configuration
+
+    property("device", "/std/string").
+        doc "the device file used to connect to the CAN bus"
+
+    output_port("stats", "/can/Statistics").
+        doc "some statistics about the CAN bus"
+
+    method("watch").
+        returns("int").
+        argument("name", "/std/string", "the name of the device/port").
+        argument("id", "int", "the bitset representing the associated CAN IDs").
+        argument("mask", "int", "a mask on the 'id' parameter")
+end
+
+using_task_library "logger"
+static_deployment do
+    t = task("Task")
+    task "can_DataLogger", "logger::Logger"
+
+    if !corba_enabled?
+        browse t
+    end
+end
+
