@@ -14,7 +14,7 @@ Task::Task(std::string const& name)
     : TaskBase(name)
 {
     // we don't want any waiting
-    m_driver.setTimeout(0);
+    m_driver.setReadTimeout(0);
 }
 
 Task::~Task()
