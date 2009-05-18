@@ -85,19 +85,17 @@ void Task::updateHook(std::vector<RTT::PortInterface*> const& updated_ports)
     }
 
     // Read the data on the file descriptor (if there is any) and push it on the
-    // matching port
-    try { 
-        while(true)
+    // matching port. We ask the board how many packets there is to read.
+    int msg_count = m_driver.getPendingMessagesCount();
+    for (int i = 0; i < msg_count; ++i)
+    {
+        msg = m_driver.read();
+        for (Mappings::const_iterator it = m_mappings.begin(); it != m_mappings.end(); ++it)
         {
-            msg = m_driver.read();
-            for (Mappings::const_iterator it = m_mappings.begin(); it != m_mappings.end(); ++it)
-            {
-                if ((msg.can_id & it->mask) == it->id)
-                    it->output->write(msg);
-            }
+            if ((msg.can_id & it->mask) == it->id)
+                it->output->write(msg);
         }
     }
-    catch(timeout_error) { }
 }
 
 void Task::stopHook()
