@@ -65,7 +65,10 @@ bool Task::configureHook()
 }
 bool Task::startHook()
 {
-    return m_driver.reset();
+    if (!m_driver.reset())
+        return false;
+    m_driver.clear();
+    return true;
 }
 
 void Task::updateHook(std::vector<RTT::PortInterface*> const& updated_ports)
