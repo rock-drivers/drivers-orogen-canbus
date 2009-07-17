@@ -27,9 +27,8 @@ end
 using_task_library "logger"
 static_deployment do
     t = task("can_Task", "can::Task")
-    logger = task "can_DataLogger", "logger::Logger"
 
-    add_peers logger, t
+    add_default_logger
 
     if !corba_enabled?
         browse t
