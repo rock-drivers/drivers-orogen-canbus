@@ -1,11 +1,9 @@
 name "can"
 
-using_toolkit "dfki"
 using_library "canbus"
-toolkit do
-    load "canmessage.hh"
-    load "canTypes.hh"
-end
+import_types_from "dfki"
+import_types_from "canmessage.hh"
+import_types_from "canTypes.hh"
 
 task_context "Task" do
     fd_driven
