@@ -60,7 +60,9 @@ bool Task::configureHook()
     if (!m_driver.open(_device.get()))
         return false;
 
-    getFileDescriptorActivity()->watch(m_driver.getFileDescriptor());
+    RTT::FileDescriptorActivity* fd_activity = getFileDescriptorActivity();
+    if (fd_activity)
+        fd_activity->watch(m_driver.getFileDescriptor());
     return true;
 }
 bool Task::startHook()
