@@ -14,6 +14,9 @@ task_context "Task" do
     property("device", "/std/string").
         doc "the device file used to connect to the CAN bus"
 
+    property("checkBusOkCount", "int").
+        doc "check after how many calls of the update hook the CAN bus will be checked, if it is still ok"
+
     output_port("stats", "/can/Statistics").
         doc "some statistics about the CAN bus"
 

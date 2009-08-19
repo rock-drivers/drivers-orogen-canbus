@@ -28,6 +28,9 @@ namespace can {
             RTT::InputPort<can::Message>*  input;
         };
         typedef std::vector<Mapping> Mappings;
+      
+        int updateHookCallCount;
+      
     
         can::Driver m_driver;
         Mappings    m_mappings;

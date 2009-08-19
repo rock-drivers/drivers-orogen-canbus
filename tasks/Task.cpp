@@ -15,6 +15,11 @@ Task::Task(std::string const& name)
 {
     // we don't want any waiting
     m_driver.setReadTimeout(0);
+
+    //check every 100 packets if bus is ok
+    _checkBusOkCount = 100;
+
+    updateHookCallCount = 0;
 }
 
 Task::~Task()
@@ -98,6 +103,15 @@ void Task::updateHook(std::vector<RTT::PortInterface*> const& updated_ports)
                 it->output->write(msg);
         }
     }
+
+    updateHookCallCount++;
+    if(updateHookCallCount > _checkBusOkCount) {
+      updateHookCallCount = 0;
+      if(!m_driver.checkBusOk()) {
+	error();
+      }
+    }
+    
 }
 
 void Task::stopHook()
