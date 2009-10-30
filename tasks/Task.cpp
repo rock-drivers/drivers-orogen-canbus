@@ -35,7 +35,7 @@ Task::~Task()
     }
 }
 
-int Task::watch(std::string name, int id, int mask)
+int Task::watch(std::string const& name, int id, int mask)
 {
     if (isActive())
         return false;

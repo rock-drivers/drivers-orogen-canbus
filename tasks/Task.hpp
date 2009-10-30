@@ -17,7 +17,7 @@ namespace can {
 	friend class TaskBase;
     protected:
     
-	int watch(std::string name, int id, int mask);
+	int watch(std::string const& name, int id, int mask);
     
         struct Mapping
         {
