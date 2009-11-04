@@ -32,7 +32,8 @@ task_context "Task" do
 end
 
 using_task_library "logger"
-static_deployment do
+deployment "test" do
+    do_not_install
     t = task("can_Task", "can::Task")
 
     add_default_logger
