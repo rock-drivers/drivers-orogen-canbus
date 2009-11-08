@@ -18,11 +18,11 @@ task_context "Task" do
     output_port("stats", "/can/Statistics").
         doc "some statistics about the CAN bus"
 
-    dynamic_input_port(Regexp.new('^hbridge$'), "/can/Message").
-        doc "port for can messages coming from the hbridge"
+    dynamic_input_port(/\w+/, "/can/Message").
+        doc "ports for writing CAN messages on the bus"
 
-    dynamic_output_port(Regexp.new('^whbridge$'), "/can/Message").
-        doc "port for can message for the hbridge"
+    dynamic_output_port(/\w+w/, "/can/Message").
+        doc "port for reading CAN messages from the bus"
 
     method("watch").
         returns("int").
