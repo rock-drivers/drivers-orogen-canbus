@@ -86,7 +86,7 @@ void Task::updateHook(std::vector<RTT::PortInterface*> const& updated_ports)
     typedef std::vector<RTT::PortInterface*> UpdatedPorts;
     for (UpdatedPorts::const_iterator it = updated_ports.begin(); it != updated_ports.end(); ++it)
     {
-        RTT::InputPort<can::Message>* port = dynamic_cast<RTT::InputPort<can::Message> *> (*it);
+        RTT::InputPort<can::Message>* port = static_cast<RTT::InputPort<can::Message> *> (*it);
         while (port->read(msg))
             m_driver.write(msg);
     }
@@ -100,7 +100,10 @@ void Task::updateHook(std::vector<RTT::PortInterface*> const& updated_ports)
         for (Mappings::const_iterator it = m_mappings.begin(); it != m_mappings.end(); ++it)
         {
             if ((msg.can_id & it->mask) == it->id)
+	    {
                 it->output->write(msg);
+		break;
+	    }
         }
     }
 
