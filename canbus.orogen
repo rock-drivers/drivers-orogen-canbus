@@ -1,7 +1,7 @@
 name "can"
 
 using_library "canbus"
-import_types_from "dfki"
+import_types_from "base"
 import_types_from "canmessage.hh"
 import_types_from "canTypes.hh"
 
