@@ -18,10 +18,10 @@ task_context "Task" do
     output_port("stats", "/can/Statistics").
         doc "some statistics about the CAN bus"
 
-    dynamic_input_port(/\w+/, "/can/Message").
+    dynamic_input_port(/\w+w/, "/can/Message").
         doc "ports for writing CAN messages on the bus"
 
-    dynamic_output_port(/\w+w/, "/can/Message").
+    dynamic_output_port(/\w+/, "/can/Message").
         doc "port for reading CAN messages from the bus"
 
     method("watch").
