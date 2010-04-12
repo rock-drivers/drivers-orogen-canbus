@@ -12,10 +12,8 @@ RTT::FileDescriptorActivity* Task::getFileDescriptorActivity()
 
 Task::Task(std::string const& name)
     : TaskBase(name)
+    , m_driver(NULL)
 {
-    // we don't want any waiting
-    m_driver.setReadTimeout(0);
-
     //check every 100 packets if bus is ok
     _checkBusOkCount = 100;
 
@@ -62,19 +60,29 @@ int Task::watch(std::string const& name, int id, int mask)
 
 bool Task::configureHook()
 {
-    if (!m_driver.open(_device.get()))
+#if CANBUS_VERSION >= 101
+    if (!(m_driver = can::openCanDevice(_device.get())))
         return false;
+#else
+    if (!(m_driver = new can::Driver()))
+        return false;
+    if (!m_driver->open(_device.get()))
+        return false;
+#endif
+
+    // we don't want any waiting
+    m_driver->setReadTimeout(0);
 
     RTT::FileDescriptorActivity* fd_activity = getFileDescriptorActivity();
     if (fd_activity)
-        fd_activity->watch(m_driver.getFileDescriptor());
+        fd_activity->watch(m_driver->getFileDescriptor());
     return true;
 }
 bool Task::startHook()
 {
-    if (!m_driver.reset())
+    if (!m_driver->reset())
         return false;
-    m_driver.clear();
+    m_driver->clear();
     return true;
 }
 
@@ -88,15 +96,15 @@ void Task::updateHook(std::vector<RTT::PortInterface*> const& updated_ports)
     {
         RTT::InputPort<can::Message>* port = static_cast<RTT::InputPort<can::Message> *> (*it);
         while (port->read(msg))
-            m_driver.write(msg);
+            m_driver->write(msg);
     }
 
     // Read the data on the file descriptor (if there is any) and push it on the
     // matching port. We ask the board how many packets there is to read.
-    int msg_count = m_driver.getPendingMessagesCount();
+    int msg_count = m_driver->getPendingMessagesCount();
     for (int i = 0; i < msg_count; ++i)
     {
-        msg = m_driver.read();
+        msg = m_driver->read();
         for (Mappings::const_iterator it = m_mappings.begin(); it != m_mappings.end(); ++it)
         {
             if ((msg.can_id & it->mask) == it->id)
@@ -110,7 +118,7 @@ void Task::updateHook(std::vector<RTT::PortInterface*> const& updated_ports)
     updateHookCallCount++;
     if(updateHookCallCount > _checkBusOkCount) {
       updateHookCallCount = 0;
-      if(!m_driver.checkBusOk()) {
+      if(!m_driver->checkBusOk()) {
 	error();
       }
     }
@@ -119,6 +127,9 @@ void Task::updateHook(std::vector<RTT::PortInterface*> const& updated_ports)
 
 void Task::stopHook()
 {
-    m_driver.close();
+    m_driver->close();
+    can::Driver *d = m_driver;
+    m_driver = NULL;
+    delete d;
 }
 

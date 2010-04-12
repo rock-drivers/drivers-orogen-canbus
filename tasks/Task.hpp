@@ -32,7 +32,7 @@ namespace can {
         int updateHookCallCount;
       
     
-        can::Driver m_driver;
+        can::Driver *m_driver;
         Mappings    m_mappings;
 
     public:
