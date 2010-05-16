@@ -28,12 +28,14 @@ namespace can {
             RTT::InputPort<can::Message>*  input;
         };
         typedef std::vector<Mapping> Mappings;
+        typedef std::map<uint32_t, RTT::OutputPort<can::Message>*> MappingCache;
       
         int updateHookCallCount;
       
     
         can::Driver *m_driver;
         Mappings    m_mappings;
+        MappingCache m_mapping_cache;
 
     public:
         Task(std::string const& name = "can::Task");

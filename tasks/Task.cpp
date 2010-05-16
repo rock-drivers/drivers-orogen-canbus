@@ -105,24 +105,33 @@ void Task::updateHook(std::vector<RTT::PortInterface*> const& updated_ports)
     for (int i = 0; i < msg_count; ++i)
     {
         msg = m_driver->read();
-        for (Mappings::const_iterator it = m_mappings.begin(); it != m_mappings.end(); ++it)
+        
+        MappingCache::const_iterator cache_it = m_mapping_cache.find(msg.can_id);
+        if (cache_it == m_mapping_cache.end())
         {
-            if ((msg.can_id & it->mask) == it->id)
-	    {
-                it->output->write(msg);
-		break;
-	    }
+            for (Mappings::const_iterator it = m_mappings.begin(); it != m_mappings.end(); ++it)
+            {
+                if ((msg.can_id & it->mask) == it->id)
+                {
+                    cache_it = m_mapping_cache.insert( std::make_pair(msg.can_id, it->output) ).first;
+                    break;
+                }
+            }
+            if (cache_it == m_mapping_cache.end())
+                cache_it = m_mapping_cache.insert( std::make_pair(msg.can_id, static_cast<RTT::OutputPort<can::Message>*>(0)) ).first;
         }
+
+        if (cache_it->second)
+            cache_it->second->write(msg);
     }
 
     updateHookCallCount++;
     if(updateHookCallCount > _checkBusOkCount) {
-      updateHookCallCount = 0;
-      if(!m_driver->checkBusOk()) {
-	error();
-      }
+        updateHookCallCount = 0;
+        if(!m_driver->checkBusOk()) {
+            error();
+        }
     }
-    
 }
 
 void Task::stopHook()
