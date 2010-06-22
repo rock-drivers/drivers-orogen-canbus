@@ -1,7 +1,7 @@
 #include "Task.hpp"
 
 #include <rtt/FileDescriptorActivity.hpp>
-
+#include <iostream>
 
 using namespace can;
 
@@ -129,7 +129,8 @@ void Task::updateHook(std::vector<RTT::PortInterface*> const& updated_ports)
     if(updateHookCallCount > _checkBusOkCount) {
         updateHookCallCount = 0;
         if(!m_driver->checkBusOk()) {
-            error();
+	    std::cerr << "canbus reported error" << std::endl;
+	    fatal();
         }
     }
 }
