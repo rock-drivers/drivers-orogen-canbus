@@ -3,7 +3,7 @@
 
 #include "can/TaskBase.hpp"
 #include "canbus.hh"
-
+#include <rtt/Ports.hpp>
 
 namespace RTT
 {
