@@ -86,17 +86,17 @@ bool Task::startHook()
     return true;
 }
 
-void Task::updateHook(std::vector<RTT::PortInterface*> const& updated_ports)
+void Task::updateHook()
 {
     can::Message msg;
 
     // Write the data that is available on the input ports
-    typedef std::vector<RTT::PortInterface*> UpdatedPorts;
-    for (UpdatedPorts::const_iterator it = updated_ports.begin(); it != updated_ports.end(); ++it)
+    for (Mappings::iterator port_it = m_mappings.begin(); port_it != m_mappings.end(); ++port_it)
     {
-        RTT::InputPort<can::Message>* port = static_cast<RTT::InputPort<can::Message> *> (*it);
-        while (port->read(msg))
+        RTT::InputPort<can::Message>* port = port_it->input;
+        while (port->read(msg)) {
             m_driver->write(msg);
+	}
     }
 
     // Read the data on the file descriptor (if there is any) and push it on the
