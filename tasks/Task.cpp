@@ -54,6 +54,7 @@ int Task::watch(std::string const& name, int id, int mask)
     // And register the mapping
     Mapping mapping = { name, id & mask, mask, output_port, input_port };
     m_mappings.push_back(mapping);
+
     return true;
 }
 
@@ -62,12 +63,17 @@ bool Task::configureHook()
 {
 #if CANBUS_VERSION >= 101
     if (!(m_driver = can::openCanDevice(_device.get())))
-        return false;
+    {
+	std::cerr << "CANBUS: Failed to open device" << std::endl;
+	return false;
+    }
 #else
-    if (!(m_driver = new can::Driver()))
-        return false;
+    m_driver = new can::Driver();
     if (!m_driver->open(_device.get()))
+    {
+	std::cerr << "CANBUS: Failed to open device" << std::endl;
         return false;
+    }
 #endif
 
     // we don't want any waiting
@@ -76,12 +82,16 @@ bool Task::configureHook()
     RTT::FileDescriptorActivity* fd_activity = getFileDescriptorActivity();
     if (fd_activity)
         fd_activity->watch(m_driver->getFileDescriptor());
+
     return true;
 }
 bool Task::startHook()
 {
     if (!m_driver->reset())
-        return false;
+    {
+	std::cerr << "CANBUS: Failed to reset can driver" << std::endl;
+	return false;
+    }
     m_driver->clear();
     return true;
 }
