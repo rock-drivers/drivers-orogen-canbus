@@ -35,6 +35,7 @@ task_context "Task" do
         argument("name", "/std/string", "the name of the watched device to remove")
 
     port_driven
+    exception_states :IO_ERROR
 end
 
 using_task_library "logger"

@@ -143,7 +143,7 @@ void Task::updateHook()
         updateHookCallCount = 0;
         if(!m_driver->checkBusOk()) {
 	    std::cerr << "canbus reported error" << std::endl;
-	    fatal();
+	    exception(IO_ERROR);
         }
     }
 }
