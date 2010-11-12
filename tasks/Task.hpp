@@ -3,13 +3,7 @@
 
 #include "can/TaskBase.hpp"
 #include "canbus.hh"
-#include <rtt/Ports.hpp>
-
-namespace RTT
-{
-    class FileDescriptorActivity;
-}
-
+#include <rtt/OutputPort.hpp>
 
 namespace can {
     class Task : public TaskBase
@@ -17,7 +11,8 @@ namespace can {
 	friend class TaskBase;
     protected:
     
-	int watch(std::string const& name, int id, int mask);
+	bool watch(std::string const& name, int id, int mask);
+        bool unwatch(std::string const& name);
     
         struct Mapping
         {
@@ -25,7 +20,6 @@ namespace can {
             int id;
             int mask;
             RTT::OutputPort<can::Message>* output;
-            RTT::InputPort<can::Message>*  input;
         };
         typedef std::vector<Mapping> Mappings;
         typedef std::map<uint32_t, RTT::OutputPort<can::Message>*> MappingCache;
@@ -40,8 +34,6 @@ namespace can {
     public:
         Task(std::string const& name = "can::Task");
         ~Task();
-
-        RTT::FileDescriptorActivity* getFileDescriptorActivity();
 
         /** This hook is called by Orocos when the state machine transitions
          * from PreOperational to Stopped. If it returns false, then the
