@@ -1,4 +1,4 @@
-name "can"
+name "canbus"
 
 using_library "canbus"
 import_types_from "base"
@@ -15,13 +15,13 @@ task_context "Task" do
     property("checkBusOkCount", "int").
         doc "check after how many calls of the update hook the CAN bus will be checked, if it is still ok"
 
-    output_port("stats", "/can/Statistics").
+    output_port("stats", "/canbus/Statistics").
         doc "some statistics about the CAN bus"
 
-    input_port("in", "/can/Message").
+    input_port("in", "/canbus/Message").
         doc "ports for writing CAN messages on the bus"
 
-    dynamic_output_port(/\w+/, "/can/Message").
+    dynamic_output_port(/\w+/, "/canbus/Message").
         doc "port for reading CAN messages from the bus"
 
     operation("watch").
@@ -41,7 +41,7 @@ end
 using_task_library "logger"
 deployment "test" do
     do_not_install
-    t = task("can_Task", "can::Task")
+    t = task("can", "canbus::Task")
 
     add_default_logger
 

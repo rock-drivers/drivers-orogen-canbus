@@ -1,38 +1,45 @@
-#ifndef CAN_TASK_TASK_HPP
-#define CAN_TASK_TASK_HPP
+/* Generated from orogen/lib/orogen/templates/tasks/Task.hpp */
 
-#include "can/TaskBase.hpp"
-#include "canbus.hh"
+#ifndef CANBUS_TASK_TASK_HPP
+#define CANBUS_TASK_TASK_HPP
+
+#include "canbus/TaskBase.hpp"
 #include <rtt/OutputPort.hpp>
 
-namespace can {
+namespace canbus {
+    class Driver;
+
     class Task : public TaskBase
     {
 	friend class TaskBase;
     protected:
     
-	bool watch(std::string const& name, int id, int mask);
-        bool unwatch(std::string const& name);
+        /* Handler for the unwatch operation
+         */
+	virtual bool watch(std::string const& name, int id, int mask);
+        /* Handler for the watch operation
+         */
+        virtual bool unwatch(std::string const& name);
     
         struct Mapping
         {
             std::string name;
             int id;
             int mask;
-            RTT::OutputPort<can::Message>* output;
+            RTT::OutputPort<canbus::Message>* output;
         };
         typedef std::vector<Mapping> Mappings;
-        typedef std::map<uint32_t, RTT::OutputPort<can::Message>*> MappingCache;
+        typedef std::map<uint32_t, RTT::OutputPort<canbus::Message>*> MappingCache;
       
         int updateHookCallCount;
       
     
-        can::Driver *m_driver;
+        canbus::Driver *m_driver;
         Mappings    m_mappings;
         MappingCache m_mapping_cache;
 
     public:
-        Task(std::string const& name = "can::Task");
+        Task(std::string const& name = "canbus::Task");
         ~Task();
 
         /** This hook is called by Orocos when the state machine transitions
@@ -59,19 +66,17 @@ namespace can {
 
         /** This hook is called by Orocos when the component is in the Running
          * state, at each activity step. Here, the activity gives the "ticks"
-         * when the hook should be called. See README.txt for different
-         * triggering options.
+         * when the hook should be called.
          *
-         * The warning(), error() and fatal() calls, when called in this hook,
-         * allow to get into the associated RunTimeWarning, RunTimeError and
+         * The error(), exception() and fatal() calls, when called in this hook,
+         * allow to get into the associated RunTimeError, Exception and
          * FatalError states. 
          *
-         * In the first case, updateHook() is still called, and recovered()
-         * allows you to go back into the Running state.  In the second case,
-         * the errorHook() will be called instead of updateHook() and in the
-         * third case the component is stopped and resetError() needs to be
-         * called before starting it again.
-         *
+         * In the first case, updateHook() is still called, and recover() allows
+         * you to go back into the Running state.  In the second case, the
+         * errorHook() will be called instead of updateHook(). In Exception, the
+         * component is stopped and recover() needs to be called before starting
+         * it again. Finally, FatalError cannot be recovered.
          */
         void updateHook();
         

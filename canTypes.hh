@@ -1,7 +1,7 @@
 #ifndef CANBUS_TYPES_HH
 #define CANBUS_TYPES_HH
 
-namespace can
+namespace canbus
 {
     struct Statistics
     {

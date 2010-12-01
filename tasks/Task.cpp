@@ -1,9 +1,12 @@
+/* Generated from orogen/lib/orogen/templates/tasks/Task.cpp */
+
 #include "Task.hpp"
 
 #include <rtt/extras/FileDescriptorActivity.hpp>
+#include <canbus.hh>
 #include <iostream>
 
-using namespace can;
+using namespace canbus;
 
 
 Task::Task(std::string const& name)
@@ -39,7 +42,7 @@ bool Task::watch(std::string const& name, int id, int mask)
     }
 
     // Create ports for both directions
-    RTT::OutputPort<can::Message>* output_port = new RTT::OutputPort<can::Message>(name);
+    RTT::OutputPort<canbus::Message>* output_port = new RTT::OutputPort<canbus::Message>(name);
     ports()->addPort(name, *output_port);
 
     // And register the mapping
@@ -68,13 +71,13 @@ bool Task::unwatch(std::string const& name)
 bool Task::configureHook()
 {
 #if CANBUS_VERSION >= 101
-    if (!(m_driver = can::openCanDevice(_device.get())))
+    if (!(m_driver = canbus::openCanDevice(_device.get())))
     {
 	std::cerr << "CANBUS: Failed to open device" << std::endl;
 	return false;
     }
 #else
-    m_driver = new can::Driver();
+    m_driver = new canbus::Driver();
     if (!m_driver->open(_device.get()))
     {
 	std::cerr << "CANBUS: Failed to open device" << std::endl;
@@ -105,7 +108,7 @@ bool Task::startHook()
 
 void Task::updateHook()
 {
-    can::Message msg;
+    canbus::Message msg;
 
     // Write the data that is available on the input ports
     while (_in.read(msg) == RTT::NewData) {
@@ -131,7 +134,7 @@ void Task::updateHook()
                 }
             }
             if (cache_it == m_mapping_cache.end())
-                cache_it = m_mapping_cache.insert( std::make_pair(msg.can_id, static_cast<RTT::OutputPort<can::Message>*>(0)) ).first;
+                cache_it = m_mapping_cache.insert( std::make_pair(msg.can_id, static_cast<RTT::OutputPort<canbus::Message>*>(0)) ).first;
         }
 
         if (cache_it->second)
@@ -151,8 +154,7 @@ void Task::updateHook()
 void Task::stopHook()
 {
     m_driver->close();
-    can::Driver *d = m_driver;
-    m_driver = NULL;
-    delete d;
+    delete m_driver;
+    m_driver = 0;
 }
 
