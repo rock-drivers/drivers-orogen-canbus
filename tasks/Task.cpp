@@ -31,7 +31,7 @@ Task::~Task()
 
 bool Task::watch(std::string const& name, int id, int mask)
 {
-    if (isActive())
+    if (isRunning())
         return false;
 
     // Check if there is no port named like this already
