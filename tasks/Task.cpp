@@ -88,15 +88,15 @@ bool Task::configureHook()
     // we don't want any waiting
     m_driver->setReadTimeout(0);
 
+    return true;
+}
+bool Task::startHook()
+{
     RTT::extras::FileDescriptorActivity* fd_activity =
         getActivity<RTT::extras::FileDescriptorActivity>();
     if (fd_activity)
         fd_activity->watch(m_driver->getFileDescriptor());
 
-    return true;
-}
-bool Task::startHook()
-{
     if (!m_driver->reset())
     {
 	std::cerr << "CANBUS: Failed to reset can driver" << std::endl;
@@ -153,6 +153,11 @@ void Task::updateHook()
 
 void Task::stopHook()
 {
+    RTT::extras::FileDescriptorActivity* fd_activity =
+        getActivity<RTT::extras::FileDescriptorActivity>();
+    if (fd_activity)
+        fd_activity->clearAllWatches();
+
     m_driver->close();
     delete m_driver;
     m_driver = 0;
