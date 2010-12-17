@@ -142,7 +142,10 @@ void Task::updateHook()
                 }
             }
             if (cache_it == m_mapping_cache.end())
+            {
+                // no mapping for this ID. Register it with a NULL output port
                 cache_it = m_mapping_cache.insert( std::make_pair(msg.can_id, static_cast<RTT::OutputPort<canbus::Message>*>(0)) ).first;
+            }
         }
 
         if (cache_it->second)
