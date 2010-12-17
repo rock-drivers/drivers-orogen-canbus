@@ -35,6 +35,7 @@ namespace canbus {
       
     
         canbus::Driver *m_driver;
+        canbus::Statistics m_stats;
         Mappings    m_mappings;
         MappingCache m_mapping_cache;
 

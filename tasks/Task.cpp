@@ -103,6 +103,7 @@ bool Task::startHook()
 	return false;
     }
     m_driver->clear();
+    m_mapping_cache.clear();
     return true;
 }
 
@@ -112,6 +113,9 @@ void Task::updateHook()
 
     // Write the data that is available on the input ports
     while (_in.read(msg) == RTT::NewData) {
+        m_stats.msg_tx++;
+        // CAN extended frames are 8 bytes of header, max 8 bytes of payload
+        m_stats.tx += 8 + msg.size;
         m_driver->write(msg);
     }
 
@@ -121,6 +125,10 @@ void Task::updateHook()
     for (int i = 0; i < msg_count; ++i)
     {
         msg = m_driver->read();
+
+        m_stats.msg_rx++;
+        // CAN extended frames are 8 bytes of header, max 8 bytes of payload
+        m_stats.rx += 8 + msg.size;
         
         MappingCache::const_iterator cache_it = m_mapping_cache.find(msg.can_id);
         if (cache_it == m_mapping_cache.end())
@@ -149,6 +157,9 @@ void Task::updateHook()
 	    exception(IO_ERROR);
         }
     }
+
+    m_stats.time = base::Time::now();
+    _stats.write(m_stats);
 }
 
 void Task::stopHook()
