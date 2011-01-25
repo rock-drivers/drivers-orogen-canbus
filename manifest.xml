@@ -15,5 +15,5 @@
   <depend package="tools/logger"/>
   <depend package="orogen"/>
   <depend package="rtt"/>
-  <tags>needs_opt</tags>
+  <tags>stable</tags>
 </package>
