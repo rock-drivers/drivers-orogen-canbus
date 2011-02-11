@@ -5,9 +5,9 @@
 #include <rtt/extras/FileDescriptorActivity.hpp>
 #include <canbus.hh>
 #include <iostream>
+#include <rtt/Logger.hpp>
 
 using namespace canbus;
-
 
 Task::Task(std::string const& name)
     : TaskBase(name)
@@ -34,11 +34,10 @@ bool Task::watch(std::string const& name, int id, int mask)
     if (isRunning())
         return false;
 
-    // Check if there is no port named like this already
-    for (Mappings::const_iterator it = m_mappings.begin(); it != m_mappings.end(); ++it)
+    if (provides()->hasService(name))
     {
-        if (it->name == name)
-            return false;
+        RTT::log(RTT::Error) << "cannot watch the specified CAN IDs on port " << name << " as the name is already in use in the task interface" << RTT::endlog();
+        return false;
     }
 
     // Create ports for both directions
