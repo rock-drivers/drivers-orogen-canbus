@@ -70,7 +70,7 @@ bool Task::unwatch(std::string const& name)
 bool Task::configureHook()
 {
 #if CANBUS_VERSION >= 101
-    if (!(m_driver = canbus::openCanDevice(_device.get())))
+    if (!(m_driver = canbus::openCanDevice(_device.get(), _deviceType.get())))
     {
 	std::cerr << "CANBUS: Failed to open device" << std::endl;
 	return false;
