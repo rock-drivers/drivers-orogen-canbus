@@ -22,6 +22,7 @@ task_context "Task" do
         doc "some statistics about the CAN bus"
 
     input_port("in", "/canbus/Message").
+        multiplexes.
         doc "ports for writing CAN messages on the bus"
 
     dynamic_output_port(/\w+/, "/canbus/Message").
