@@ -6,6 +6,8 @@ import_types_from "canmessage.hh"
 import_types_from "canTypes.hh"
 
 task_context "Task" do
+    doc "component that allows to demultiplex CAN messages from a single CAN bus, and monitor the bus health indicators. To use, one adds specific CAN messages to watch using watch(), and then connects to the port(s) created by watch()."
+
     fd_driven
     needs_configuration
 
@@ -29,13 +31,14 @@ task_context "Task" do
         doc "port for reading CAN messages from the bus"
 
     operation("watch").
-        returns("bool").
-        argument("name", "/std/string", "the name of the device to watch. The corresponding output port will have this name").
-        argument("id", "int", "the bitset representing the associated CAN IDs").
-        argument("mask", "int", "a mask on the 'id' parameter")
+        doc("requires the canbus component to filter the incoming CAN messages for interesting messages and output them to a specified port").
+        returns("bool", "returns true if the port could be created and false otherwise. The only failure reason is that the name is already in use").
+        argument("name", "/std/string", "the name of the output port. The new port will be of type /canbus/Message.").
+        argument("id", "int",  "only messages for which (can_msg.id & mask) == id will be written on the new port").
+        argument("mask", "int", "only messages for which (can_msg.id & mask) == id will be written on the new port")
 
     operation("unwatch").
-        returns("bool").
+        returns("bool", "true if the given name was a valid watch name, and false otherwise").
         argument("name", "/std/string", "the name of the watched device to remove")
 
     port_driven
