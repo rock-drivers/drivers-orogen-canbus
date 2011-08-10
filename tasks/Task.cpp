@@ -147,6 +147,7 @@ void Task::updateHook()
     
     if(cur_time - m_last_can_check_time > m_can_check_interval)
     {
+	m_last_can_check_time = cur_time;
         if(!m_driver->checkBusOk()) {
 	    std::cerr << "canbus reported error" << std::endl;
 	    exception(IO_ERROR);
