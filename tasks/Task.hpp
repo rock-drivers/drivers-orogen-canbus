@@ -29,10 +29,13 @@ namespace canbus {
             RTT::OutputPort<canbus::Message>* output;
         };
         typedef std::vector<Mapping> Mappings;
-        typedef std::map<uint32_t, RTT::OutputPort<canbus::Message>*> MappingCache;
-      
-        int updateHookCallCount;
-      
+	
+	struct MappingCacheItem
+	{
+	    int id;
+	    std::vector<RTT::OutputPort<canbus::Message>* > outputs;
+	};
+        typedef std::map<uint32_t, MappingCacheItem> MappingCache;      
     
         canbus::Driver *m_driver;
         canbus::Statistics m_stats;

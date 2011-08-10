@@ -146,23 +146,24 @@ void Task::updateHook()
         MappingCache::const_iterator cache_it = m_mapping_cache.find(msg.can_id);
         if (cache_it == m_mapping_cache.end())
         {
-            for (Mappings::const_iterator it = m_mappings.begin(); it != m_mappings.end(); ++it)
+	    MappingCacheItem new_cache_item;
+	    new_cache_item.id = msg.can_id;
+	    
+            for (Mappings::const_iterator it = m_mappings.begin(); it != m_mappings.end(); it++)
             {
                 if ((msg.can_id & it->mask) == it->id)
                 {
-                    cache_it = m_mapping_cache.insert( std::make_pair(msg.can_id, it->output) ).first;
-                    break;
+		    new_cache_item.outputs.push_back(it->output);
                 }
             }
-            if (cache_it == m_mapping_cache.end())
-            {
-                // no mapping for this ID. Register it with a NULL output port
-                cache_it = m_mapping_cache.insert( std::make_pair(msg.can_id, static_cast<RTT::OutputPort<canbus::Message>*>(0)) ).first;
-            }
+            
+            cache_it = m_mapping_cache.insert(std::make_pair(new_cache_item.id, new_cache_item)).first;
         }
 
-        if (cache_it->second)
-            cache_it->second->write(msg);
+	for(std::vector<RTT::OutputPort<canbus::Message>*>::const_iterator it = cache_it->second.outputs.begin(); it != cache_it->second.outputs.end(); it++) 
+	{
+	    (*it)->write(msg);
+	}
     }
 
     updateHookCallCount++;
