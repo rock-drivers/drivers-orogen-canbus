@@ -107,21 +107,7 @@ void Task::updateHook()
         // CAN extended frames are 8 bytes of header, max 8 bytes of payload
         m_stats.tx += 8 + msg.size;
         m_driver->write(msg);
-        //std::cerr << "wrote " << (int)msg.data[0] << "," << (int)msg.data[1] << " to can id " << (int)msg.can_id << std::endl;
     }
-
-    if(!m_driver->checkBusOk()) 
-    {
-        std::cout << "canbus reported an error, trying to reset ... ";
-        //exception(IO_ERROR);
-        m_driver->reset();
-        std::cout << "canbus reset done.\n";
-    }
- //   else
- //       std::cerr << "canbus OK\n";
-
-
-
 
     // Read the data on the file descriptor (if there is any) and push it on the
     // matching port. We ask the board how many packets there is to read.
@@ -163,8 +149,7 @@ void Task::updateHook()
     {
         if(!m_driver->checkBusOk()) {
 	    std::cerr << "canbus reported error" << std::endl;
-	    //exception(IO_ERROR);
-            m_driver->reset();
+	    exception(IO_ERROR);
         }
     }
     

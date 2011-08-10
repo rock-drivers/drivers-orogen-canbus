@@ -49,10 +49,9 @@ task_context "Task" do
 end
 
 using_task_library "logger"
-deployment "canbus" do
-    #do_not_install
-    t = task("canbus", "canbus::Task").
-        periodic(0.01)
+deployment "test" do
+    do_not_install
+    t = task("can", "canbus::Task")
 
     add_default_logger
 
