@@ -17,13 +17,13 @@ task_context "Task" do
     property("deviceType", "/canbus/DRIVER_TYPE").
         doc "the device type, this determines which driver will be used to open the device"
 
-    property("checkBusOkInterval", "int").
+    property("checkBusOkInterval", "int", 100).
         doc "this property defines the interval in which the can bus is checked for correct function. The unit is in ms"
 
     output_port("stats", "/canbus/Statistics").
         doc "some statistics about the CAN bus"
 
-    property("statsInterval", "int").
+    property("statsInterval", "int", 1000).
         doc "the interval in which the stats message is send. The unit is in ms"
 
     input_port("in", "/canbus/Message").
