@@ -13,10 +13,6 @@ Task::Task(std::string const& name)
     : TaskBase(name)
     , m_driver(NULL)
 {
-    //check every 100 packets if bus is ok
-    _checkBusOkCount = 100;
-
-    updateHookCallCount = 0;
 }
 
 Task::~Task()
@@ -69,26 +65,21 @@ bool Task::unwatch(std::string const& name)
 
 bool Task::configureHook()
 {
-#if CANBUS_VERSION >= 101
     if (!(m_driver = canbus::openCanDevice(_device.get(), _deviceType.get())))
     {
 	std::cerr << "CANBUS: Failed to open device" << std::endl;
 	return false;
     }
-#else
-    m_driver = new canbus::Driver();
-    if (!m_driver->open(_device.get()))
-    {
-	std::cerr << "CANBUS: Failed to open device" << std::endl;
-        return false;
-    }
-#endif
 
+    m_can_check_interval = base::Time::fromMicroseconds(_checkBusOkInterval.get() * 1000);
+    m_stats_interval = base::Time::fromMicroseconds(_statsInterval.get() * 1000);
+    
     // we don't want any waiting
     m_driver->setReadTimeout(0);
 
     return true;
 }
+
 bool Task::startHook()
 {
     RTT::extras::FileDescriptorActivity* fd_activity =
@@ -166,18 +157,23 @@ void Task::updateHook()
 	}
     }
 
-    updateHookCallCount++;
-    if(updateHookCallCount > _checkBusOkCount) {
-        updateHookCallCount = 0;
+    base::Time cur_time = base::Time::now();
+    
+    if(cur_time - m_last_can_check_time > m_can_check_interval)
+    {
         if(!m_driver->checkBusOk()) {
 	    std::cerr << "canbus reported error" << std::endl;
 	    //exception(IO_ERROR);
             m_driver->reset();
         }
     }
-
-    m_stats.time = base::Time::now();
-    _stats.write(m_stats);
+    
+    if(cur_time - m_last_stats_time > m_stats_interval)
+    {
+	m_stats.time = cur_time;
+	m_last_stats_time = cur_time;
+	_stats.write(m_stats);
+    }
 }
 
 void Task::stopHook()

@@ -41,6 +41,11 @@ namespace canbus {
         canbus::Statistics m_stats;
         Mappings    m_mappings;
         MappingCache m_mapping_cache;
+	base::Time m_last_can_check_time;
+	base::Time m_last_stats_time;
+	
+	base::Time m_can_check_interval;
+	base::Time m_stats_interval;
 
     public:
         Task(std::string const& name = "canbus::Task");
