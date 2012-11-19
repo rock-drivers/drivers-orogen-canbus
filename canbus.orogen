@@ -49,7 +49,7 @@ task_context "Task" do
 end
 
 using_task_library "logger"
-deployment "test" do
+deployment "test_canbus" do
     do_not_install
     t = task("can", "canbus::Task")
 
