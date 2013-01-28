@@ -48,6 +48,16 @@ task_context "Task" do
     exception_states :IO_ERROR
 end
 
+task_context "InterfaceTask" do
+    doc "This Task could be the superclass if you need an abstract implementation for an canbus"
+    
+    input_port("can_in", "canbus/Message").
+        doc("Ingoing CAN Messages")
+
+    output_port("can_out", "canbus/Message").
+        doc("Outgoing CAN Messages")
+end
+
 using_task_library "logger"
 deployment "test_canbus" do
     do_not_install
