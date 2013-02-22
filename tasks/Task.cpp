@@ -157,6 +157,7 @@ void Task::updateHook()
     if(cur_time - m_last_stats_time > m_stats_interval)
     {
 	m_stats.time = cur_time;
+        m_stats.error_count =  m_driver->getErrorCount();
 	m_last_stats_time = cur_time;
 	_stats.write(m_stats);
     }
