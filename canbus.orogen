@@ -25,6 +25,9 @@ task_context "Task" do
 
     property("statsInterval", "int", 1000).
         doc "the interval in which the stats message is send. The unit is in ms"
+        
+    property("baudRate", "/canbus/BAUD_RATE",:br125).
+         doc "baud_rate for CAN2WEB type"
 
     input_port("in", "/canbus/Message").
         multiplexes.

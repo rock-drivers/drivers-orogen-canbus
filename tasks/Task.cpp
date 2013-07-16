@@ -3,7 +3,9 @@
 #include "Task.hpp"
 
 #include <rtt/extras/FileDescriptorActivity.hpp>
+#include <iodrivers_base/Exceptions.hpp>
 #include <canbus.hh>
+#include <canbus-2web.hh>
 #include <iostream>
 #include <rtt/Logger.hpp>
 
@@ -74,6 +76,11 @@ bool Task::configureHook()
     m_can_check_interval = base::Time::fromMicroseconds(_checkBusOkInterval.get() * 1000);
     m_stats_interval = base::Time::fromMicroseconds(_statsInterval.get() * 1000);
     
+    Driver2Web* driver2Web = dynamic_cast<Driver2Web*>(m_driver);
+    if(canbus::CAN2WEB == _deviceType.get() && driver2Web){
+      driver2Web->setBaudrate((BAUD_RATE)_baudRate.get());
+    }
+    
     // we don't want any waiting
     m_driver->setReadTimeout(0);
 
@@ -114,7 +121,18 @@ void Task::updateHook()
     int msg_count = m_driver->getPendingMessagesCount();
     for (int i = 0; i < msg_count; ++i)
     {
-        msg = m_driver->read();
+       	if(canbus::CAN2WEB == _deviceType.get()){
+	  try{
+	    msg = m_driver->read();
+	  }
+	  catch(iodrivers_base::TimeoutError& e){
+	    //might be ascii stuff, do nothing
+	    return;	  
+	  }
+	}
+	else{
+	  msg = m_driver->read();
+	}
 
         m_stats.msg_rx++;
         // CAN extended frames are 8 bytes of header, max 8 bytes of payload
