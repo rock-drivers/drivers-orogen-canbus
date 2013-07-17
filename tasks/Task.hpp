@@ -108,6 +108,8 @@ namespace canbus {
          * before calling start() again.
          */
         // void cleanupHook();
+        
+        void statusCheck(const Status& status);
     };
 }
 

@@ -4,12 +4,14 @@
 
 #include <rtt/extras/FileDescriptorActivity.hpp>
 #include <iodrivers_base/Exceptions.hpp>
+#include <base_schilling/Error.hpp>
 #include <canbus.hh>
 #include <canbus-2web.hh>
 #include <iostream>
 #include <rtt/Logger.hpp>
 
 using namespace canbus;
+using namespace oro_marum;
 
 Task::Task(std::string const& name)
     : TaskBase(name)
@@ -123,6 +125,12 @@ void Task::updateHook()
     {
        	if(canbus::CAN2WEB == _deviceType.get()){
 	  try{
+	    Driver2Web* driver2Web = dynamic_cast<Driver2Web*>(m_driver);
+	    if(driver2Web){
+		Status status = driver2Web->getStatus();
+		_can_status.write(status);
+		statusCheck(status);		
+	    }
 	    msg = m_driver->read();
 	  }
 	  catch(iodrivers_base::TimeoutError& e){
@@ -191,5 +199,36 @@ void Task::stopHook()
     m_driver->close();
     delete m_driver;
     m_driver = 0;
+}
+
+void Task::statusCheck(const Status& status)
+{
+  bool bCanError = false;
+  if(status.error & CAN_ERR_XMTFULL){
+    _log_message.write(LogMessage(Alarm, CANSTR_XMTFULL, CANALARM_XMTFULL));
+  }
+  if(status.error & CAN_ERR_OVERRUN){
+    bCanError = true;
+    _log_message.write(LogMessage(Alarm, CANSTR_OVERRUN, CANALARM_OVERRUN));
+  }
+  if(status.error & CAN_ERR_BUSERR){
+    bCanError = true;
+    _log_message.write(LogMessage(Alarm, CANSTR_BUSERR, CANALARM_BUSERR));
+  }
+  if(status.error & CAN_ERR_BUSOFF){
+    bCanError = true;
+    _log_message.write(LogMessage(Alarm, CANSTR_BUSOFF, CANALARM_BUSOFF));
+  }
+  if(status.error & CAN_ERR_RX_OVERFLOW){
+    bCanError = true;
+    _log_message.write(LogMessage(Alarm, CANSTR_RX_OVERFLOW, CANALARM_RX_OVERFLOW));
+  }
+  if(status.error & CAN_ERR_TX_OVERFLOW){
+    bCanError = true;
+    _log_message.write(LogMessage(Alarm, CANSTR_TX_OVERFLOW, CANALARM_TX_OVERFLOW));
+  }
+  if(bCanError){
+    error(CAN_ERROR);
+  }
 }
 
