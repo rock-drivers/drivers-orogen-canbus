@@ -4,6 +4,7 @@
 
 #include <rtt/extras/FileDescriptorActivity.hpp>
 #include <iodrivers_base/Exceptions.hpp>
+#include <base_schilling/Error.hpp>
 #include <canbus.hh>
 #include <canbus-2web.hh>
 #include <iostream>
