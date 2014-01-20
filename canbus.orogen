@@ -38,6 +38,7 @@ task_context "Task" do
 
     input_port("in", "/canbus/Message").
         multiplexes.
+        needs_reliable_connection.
         doc "ports for writing CAN messages on the bus"
 
     dynamic_output_port(/\w+/, "/canbus/Message").
@@ -63,6 +64,7 @@ task_context "InterfaceTask" do
     doc "This Task could be the superclass if you need an abstract implementation for an canbus"
     
     input_port("can_in", "canbus/Message").
+        needs_reliable_connection.
         doc("Ingoing CAN Messages")
 
     output_port("can_out", "canbus/Message").
