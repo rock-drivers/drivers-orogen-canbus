@@ -117,7 +117,6 @@ void Task::updateHook()
         m_stats.tx += 8 + msg.size;
         m_driver->write(msg);
     }
-
     // Read the data on the file descriptor (if there is any) and push it on the
     // matching port. We ask the board how many packets there is to read.
     int msg_count = m_driver->getPendingMessagesCount();
@@ -125,17 +124,20 @@ void Task::updateHook()
     {
        	if(canbus::CAN2WEB == _deviceType.get()){
 	  try{
+	    msg = m_driver->read();  
 	    Driver2Web* driver2Web = dynamic_cast<Driver2Web*>(m_driver);
 	    if(driver2Web){
 		Status status = driver2Web->getStatus();
 		_can_status.write(status);
-		statusCheck(status);		
+		statusCheck(status);
 	    }
-	    msg = m_driver->read();
 	  }
-	  catch(iodrivers_base::TimeoutError& e){
-	    //might be ascii stuff, do nothing
-	    return;	  
+	  catch(std::runtime_error& e){
+	    if (dynamic_cast<iodrivers_base::TimeoutError*>(&e)){
+	      //might be ascii stuff, do nothing
+	      usleep(500);
+	      continue;
+	    }
 	  }
 	}
 	else{
