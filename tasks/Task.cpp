@@ -170,8 +170,14 @@ void Task::stopHook()
     if (fd_activity)
         fd_activity->clearAllWatches();
 
+    TaskBase::stopHook();
+}
+
+void Task::cleanupHook()
+{
     m_driver->close();
     delete m_driver;
     m_driver = 0;
-}
 
+    TaskBase::cleanupHook();
+}

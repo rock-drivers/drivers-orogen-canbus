@@ -8,7 +8,6 @@ import_types_from "canTypes.hh"
 task_context "Task" do
     doc "component that allows to demultiplex CAN messages from a single CAN bus, and monitor the bus health indicators. To use, one adds specific CAN messages to watch using watch(), and then connects to the port(s) created by watch()."
 
-    fd_driven
     needs_configuration
 
     property("device", "/std/string").
@@ -45,6 +44,7 @@ task_context "Task" do
         argument("name", "/std/string", "the name of the watched device to remove")
 
     port_driven
+    fd_driven
     exception_states :IO_ERROR
 end
 
