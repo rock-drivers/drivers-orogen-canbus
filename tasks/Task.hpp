@@ -107,7 +107,7 @@ namespace canbus {
          * from Stopped to PreOperational, requiring the call to configureHook()
          * before calling start() again.
          */
-        // void cleanupHook();
+        void cleanupHook();
 
         void statusCheck(const Status& status);
     };
