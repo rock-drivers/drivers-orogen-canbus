@@ -3,12 +3,13 @@
   <description brief="oroGen driver for CAN bus integration">
         This oroGen component offers an integrated driver for access to the CAN
         bus, using the drivers/canbus package.
-    </description>
+  </description>
   <author>Sylvain Joyeux/sylvain.joyeux@dfki.de</author>
   <copyright>
         DFKI/robotik@dfki.de
         Sylvain Joyeux/sylvain.joyeux@m4x.org
-    </copyright>
+  </copyright>
+  <maintainer>Jens Renken/renken@marum.de</maintainer>
   <license>GPL v2 or later</license>
   <depend package="drivers/canbus"/>
   <depend package="base/orogen/types"/>
