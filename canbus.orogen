@@ -4,7 +4,6 @@ using_library "canbus"
 import_types_from "base"
 import_types_from "canmessage.hh"
 import_types_from "canTypes.hh"
-import_types_from "base_schilling/Error.hpp"
 
 task_context "Task" do
     doc "component that allows to demultiplex CAN messages from a single CAN bus, and monitor the bus health indicators. To use, one adds specific CAN messages to watch using watch(), and then connects to the port(s) created by watch()."
@@ -22,18 +21,9 @@ task_context "Task" do
 
     output_port("stats", "/canbus/Statistics").
         doc "some statistics about the CAN bus"
-        
-    output_port("can_status", "canbus/Status").
-	doc "can bus status for CAN2WEB type"
-	
-    output_port('log_message', 'oro_marum/LogMessage').
-        doc 'TextMessage with different priority levels'
 
     property("statsInterval", "int", 1000).
         doc "the interval in which the stats message is send. The unit is in ms"
-        
-    property("baudRate", "/canbus/BAUD_RATE",:br125).
-         doc "baud_rate for CAN2WEB type"
 
     input_port("in", "/canbus/Message").
         multiplexes.
@@ -57,12 +47,11 @@ task_context "Task" do
     port_driven
     fd_driven
     exception_states :IO_ERROR
-    error_states :CAN_ERROR
 end
 
 task_context "InterfaceTask" do
     doc "This Task could be the superclass if you need an abstract implementation for an canbus"
-    
+
     input_port("can_in", "canbus/Message").
         needs_reliable_connection.
         doc("Ingoing CAN Messages")

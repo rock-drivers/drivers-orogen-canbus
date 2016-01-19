@@ -109,7 +109,6 @@ namespace canbus {
          */
         void cleanupHook();
 
-        void statusCheck(const Status& status);
     };
 }
 

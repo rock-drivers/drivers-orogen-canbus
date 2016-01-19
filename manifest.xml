@@ -16,6 +16,5 @@
   <depend package="tools/logger"/>
   <depend package="orogen"/>
   <depend package="rtt"/>
-  <depend package="drivers/base_schilling" />
   <tags>stable</tags>
 </package>

@@ -3,15 +3,11 @@
 #include "Task.hpp"
 
 #include <rtt/extras/FileDescriptorActivity.hpp>
-#include <iodrivers_base/Exceptions.hpp>
-#include <base_schilling/Error.hpp>
 #include <canbus.hh>
-#include <canbus-2web.hh>
 #include <iostream>
 #include <rtt/Logger.hpp>
 
 using namespace canbus;
-using namespace oro_marum;
 
 Task::Task(std::string const& name)
 : TaskBase(name)
@@ -81,11 +77,6 @@ bool Task::configureHook()
     m_can_check_interval = base::Time::fromMicroseconds(_checkBusOkInterval.get() * 1000);
     m_stats_interval = base::Time::fromMicroseconds(_statsInterval.get() * 1000);
 
-    Driver2Web* driver2Web = dynamic_cast<Driver2Web*>(m_driver);
-    if(canbus::CAN2WEB == _deviceType.get() && driver2Web){
-        driver2Web->setBaudrate((BAUD_RATE)_baudRate.get());
-    }
-
     // we don't want any waiting
     m_driver->setReadTimeout(0);
 
@@ -125,27 +116,7 @@ void Task::updateHook()
     int msg_count = m_driver->getPendingMessagesCount();
     for (int i = 0; i < msg_count; ++i)
     {
-        if(canbus::CAN2WEB == _deviceType.get()){
-            try{
-                msg = m_driver->read();
-                Driver2Web* driver2Web = dynamic_cast<Driver2Web*>(m_driver);
-                if(driver2Web){
-                    Status status = driver2Web->getStatus();
-                    _can_status.write(status);
-                    statusCheck(status);
-                }
-            }
-            catch(std::runtime_error& e){
-                if (dynamic_cast<iodrivers_base::TimeoutError*>(&e)){
-                    //might be ascii stuff, do nothing
-                    usleep(500);
-                    continue;
-                }
-            }
-        }
-        else{
-            msg = m_driver->read();
-        }
+        msg = m_driver->read();
 
         m_stats.msg_rx++;
         // CAN extended frames are 8 bytes of header, max 8 bytes of payload
@@ -210,35 +181,4 @@ void Task::cleanupHook()
     delete m_driver;
     m_driver = 0;
     TaskBase::cleanupHook();
-}
-
-void Task::statusCheck(const Status& status)
-{
-    bool bCanError = false;
-    if(status.error & CAN_ERR_XMTFULL){
-        _log_message.write(LogMessage(Alarm, CANSTR_XMTFULL, CANALARM_XMTFULL));
-    }
-    if(status.error & CAN_ERR_OVERRUN){
-        bCanError = true;
-        _log_message.write(LogMessage(Alarm, CANSTR_OVERRUN, CANALARM_OVERRUN));
-    }
-    if(status.error & CAN_ERR_BUSERR){
-        bCanError = true;
-        _log_message.write(LogMessage(Alarm, CANSTR_BUSERR, CANALARM_BUSERR));
-    }
-    if(status.error & CAN_ERR_BUSOFF){
-        bCanError = true;
-        _log_message.write(LogMessage(Alarm, CANSTR_BUSOFF, CANALARM_BUSOFF));
-    }
-    if(status.error & CAN_ERR_RX_OVERFLOW){
-        bCanError = true;
-        _log_message.write(LogMessage(Alarm, CANSTR_RX_OVERFLOW, CANALARM_RX_OVERFLOW));
-    }
-    if(status.error & CAN_ERR_TX_OVERFLOW){
-        bCanError = true;
-        _log_message.write(LogMessage(Alarm, CANSTR_TX_OVERFLOW, CANALARM_TX_OVERFLOW));
-    }
-    if(bCanError){
-        error(CAN_ERROR);
-    }
 }
