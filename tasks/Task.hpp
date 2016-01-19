@@ -11,16 +11,16 @@ namespace canbus {
 
     class Task : public TaskBase
     {
-	friend class TaskBase;
+        friend class TaskBase;
     protected:
-    
+
         /* Handler for the unwatch operation
          */
-	virtual bool watch(std::string const& name, int id, int mask);
+        virtual bool watch(std::string const& name, int id, int mask);
         /* Handler for the watch operation
          */
         virtual bool unwatch(std::string const& name);
-    
+
         struct Mapping
         {
             std::string name;
@@ -29,23 +29,23 @@ namespace canbus {
             RTT::OutputPort<canbus::Message>* output;
         };
         typedef std::vector<Mapping> Mappings;
-	
-	struct MappingCacheItem
-	{
-	    int id;
-	    std::vector<RTT::OutputPort<canbus::Message>* > outputs;
-	};
+
+        struct MappingCacheItem
+        {
+            int id;
+            std::vector<RTT::OutputPort<canbus::Message>* > outputs;
+        };
         typedef std::map<uint32_t, MappingCacheItem> MappingCache;      
-    
+
         canbus::Driver *m_driver;
         canbus::Statistics m_stats;
         Mappings    m_mappings;
         MappingCache m_mapping_cache;
-	base::Time m_last_can_check_time;
-	base::Time m_last_stats_time;
-	
-	base::Time m_can_check_interval;
-	base::Time m_stats_interval;
+        base::Time m_last_can_check_time;
+        base::Time m_last_stats_time;
+
+        base::Time m_can_check_interval;
+        base::Time m_stats_interval;
 
     public:
         Task(std::string const& name = "canbus::Task");
@@ -88,7 +88,7 @@ namespace canbus {
          * it again. Finally, FatalError cannot be recovered.
          */
         void updateHook();
-        
+
 
         /** This hook is called by Orocos when the component is in the
          * RunTimeError state, at each activity step. See the discussion in
@@ -108,7 +108,7 @@ namespace canbus {
          * before calling start() again.
          */
         // void cleanupHook();
-        
+
         void statusCheck(const Status& status);
     };
 }
