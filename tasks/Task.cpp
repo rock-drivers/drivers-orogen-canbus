@@ -27,6 +27,7 @@ Task::~Task()
         ports()->removePort(it->output->getName());
         delete it->output;
     }
+    delete m_driver;
 }
 
 bool Task::watch(std::string const& name, int id, int mask)
