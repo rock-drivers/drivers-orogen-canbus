@@ -1,7 +1,7 @@
 #ifndef CANBUS_TYPES_HH
 #define CANBUS_TYPES_HH
 
-#include <base/time.h>
+#include <base/Time.hpp>
 
 namespace canbus
 {
