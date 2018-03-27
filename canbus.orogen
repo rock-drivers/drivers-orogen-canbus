@@ -1,8 +1,9 @@
 name "canbus"
 
-using_library "canbus"
 import_types_from "base"
-import_types_from "canmessage.hh"
+
+using_library "canbus"
+import_types_from "canbus/Message.hpp"
 import_types_from "canTypes.hh"
 
 task_context "Task" do
