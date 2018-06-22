@@ -76,10 +76,6 @@ bool Task::configureHook()
 
     m_can_check_interval = base::Time::fromMicroseconds(_checkBusOkInterval.get() * 1000);
     m_stats_interval = base::Time::fromMicroseconds(_statsInterval.get() * 1000);
-
-    // we don't want any waiting
-    m_driver->setReadTimeout(0);
-
     return true;
 }
 
@@ -88,7 +84,10 @@ bool Task::startHook()
     RTT::extras::FileDescriptorActivity* fd_activity =
             getActivity<RTT::extras::FileDescriptorActivity>();
     if (fd_activity)
+    {
         fd_activity->watch(m_driver->getFileDescriptor());
+        fd_activity->setTimeout(100);
+    }
 
     if (!m_driver->reset())
     {
