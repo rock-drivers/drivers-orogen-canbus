@@ -24,8 +24,8 @@ namespace canbus {
         struct Mapping
         {
             std::string name;
-            int id;
-            int mask;
+            uint32_t id;
+            uint32_t mask;
             RTT::OutputPort<canbus::Message>* output;
         };
         typedef std::vector<Mapping> Mappings;
@@ -35,7 +35,7 @@ namespace canbus {
             int id;
             std::vector<RTT::OutputPort<canbus::Message>* > outputs;
         };
-        typedef std::map<uint32_t, MappingCacheItem> MappingCache;      
+        typedef std::map<uint32_t, MappingCacheItem> MappingCache;
 
         canbus::Driver *m_driver;
         canbus::Statistics m_stats;
@@ -79,7 +79,7 @@ namespace canbus {
          *
          * The error(), exception() and fatal() calls, when called in this hook,
          * allow to get into the associated RunTimeError, Exception and
-         * FatalError states. 
+         * FatalError states.
          *
          * In the first case, updateHook() is still called, and recover() allows
          * you to go back into the Running state.  In the second case, the

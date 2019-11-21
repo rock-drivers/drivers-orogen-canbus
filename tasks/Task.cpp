@@ -129,7 +129,7 @@ void Task::updateHook()
 
             for (Mappings::const_iterator it = m_mappings.begin(); it != m_mappings.end(); it++)
             {
-                if ((msg.can_id & it->mask) == it->id)
+                if ((msg.can_id & it->mask) == static_cast<uint32_t>(it->id))
                 {
                     new_cache_item.outputs.push_back(it->output);
                 }
