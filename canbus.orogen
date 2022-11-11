@@ -26,7 +26,7 @@ task_context "Task" do
     property("statsInterval", "int", 1000).
         doc "the interval in which the stats message is send. The unit is in ms"
 
-    property("output_portnames", "std/vector</std/string>").
+    property("outputPortnames", "std/vector</std/string>").
         doc "The component will create the necessary ports at configure time based on the port names that are listed in the configuration file"
 
     input_port("in", "/canbus/Message").

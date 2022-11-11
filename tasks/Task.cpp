@@ -75,18 +75,22 @@ bool Task::configureHook()
     }
 
     // creating dynamic ports
-    std::vector<std::string> portnames(_output_portnames.get());
+    std::vector<std::string> portnames(_outputPortnames.get());
     for (size_t i = 0; i < portnames.size(); ++i)
     {
         std::string const& portname(portnames[i]);
         if (ports()->getPort(portname))
         {
             RTT::log(RTT::Error) << "output port " <<  portname << " is listed more than once in the outputs configuration property" << RTT::endlog();
-            // ports()->clearPorts();
             return false;
         }
         RTT::OutputPort<canbus::Message>* output_port = new RTT::OutputPort<canbus::Message>(portname);
         ports()->addPort(portname, *output_port);
+        // register the mapping
+        std::uint32_t id  = 0;
+        std::uint32_t mask = 0;
+        Mapping mapping = { portname, id & mask, mask, output_port };
+        m_mappings.push_back(mapping);
     }
    
     m_can_check_interval = base::Time::fromMicroseconds(_checkBusOkInterval.get() * 1000);
