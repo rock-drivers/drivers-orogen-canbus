@@ -75,21 +75,19 @@ bool Task::configureHook()
     }
 
     // creating dynamic ports
-    std::vector<std::string> portnames(_outputPortnames.get());
-    for (size_t i = 0; i < portnames.size(); ++i)
+    std::vector<canbus::CanOutputPort> outputports(_outputPorts.get());
+    for (size_t i = 0; i < outputports.size(); ++i)
     {
-        std::string const& portname(portnames[i]);
-        if (ports()->getPort(portname))
+        canbus::CanOutputPort const& outputport(outputports[i]);
+        if (ports()->getPort(outputport.ports_name))
         {
-            RTT::log(RTT::Error) << "output port " <<  portname << " is listed more than once in the outputs configuration property" << RTT::endlog();
+            RTT::log(RTT::Error) << "output port " <<  outputport.ports_name << " is listed more than once in the outputs configuration property" << RTT::endlog();
             return false;
         }
-        RTT::OutputPort<canbus::Message>* output_port = new RTT::OutputPort<canbus::Message>(portname);
-        ports()->addPort(portname, *output_port);
+        RTT::OutputPort<canbus::Message>* new_output_port = new RTT::OutputPort<canbus::Message>(outputport.ports_name);
+        ports()->addPort(outputport.ports_name, *new_output_port);
         // register the mapping
-        std::uint32_t id  = 0;
-        std::uint32_t mask = 0;
-        Mapping mapping = { portname, id & mask, mask, output_port };
+        Mapping mapping = { outputport.ports_name, outputport.id & outputport.mask, outputport.mask, new_output_port };
         m_mappings.push_back(mapping);
     }
    
