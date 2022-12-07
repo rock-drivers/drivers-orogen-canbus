@@ -75,7 +75,7 @@ bool Task::configureHook()
     }
 
     // creating dynamic ports
-    std::vector<canbus::CanOutputPort> outputports(_outputPorts.get());
+    outputports = _outputPorts.get();
     for (size_t i = 0; i < outputports.size(); ++i)
     {
         canbus::CanOutputPort const& outputport(outputports[i]);
@@ -196,5 +196,19 @@ void Task::cleanupHook()
     m_driver->close();
     delete m_driver;
     m_driver = 0;
+    for (Mappings::const_iterator it = m_mappings.begin(); it != m_mappings.end(); ++it)
+    {
+        for (size_t i = 0; i < outputports.size(); ++i)
+        {
+            canbus::CanOutputPort const& outputport(outputports[i]);
+            if (it->output->getName() == outputport.ports_name)
+            {
+                m_mapping_cache.clear();
+                ports()->removePort(it->output->getName());
+                delete it->output;
+                m_mappings.erase(it);
+            }
+        }
+    }
     TaskBase::cleanupHook();
 }
