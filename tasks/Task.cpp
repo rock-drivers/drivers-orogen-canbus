@@ -196,22 +196,17 @@ void Task::cleanupHook()
     m_driver->close();
     delete m_driver;
     m_driver = 0;
-    for (Mappings::const_iterator it = m_mappings.begin(); it != m_mappings.end(); ++it)
+    for (Mappings::const_iterator it = m_mappings.begin(); it != m_mappings.end();)
     {
-        for (size_t i = 0; i < outputports.size(); ++i)
+        if (it->remove_on_cleanup)
         {
-            canbus::CanOutputPort const& outputport(outputports[i]);
-            if (it->output->getName() == outputport.ports_name)
-            {
-                if (it->remove_on_cleanup)
-                {
-                m_mapping_cache.clear();
-                ports()->removePort(it->output->getName());
-                delete it->output;
-                m_mappings.erase(it);
-                }
-            }
+            m_mapping_cache.clear();
+            ports()->removePort(it->output->getName());
+            delete it->output;
+            it = m_mappings.erase(it);
         }
+        else 
+            ++it;
     }
     TaskBase::cleanupHook();
 }
