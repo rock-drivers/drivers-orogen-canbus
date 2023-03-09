@@ -42,7 +42,7 @@ bool Task::watch(std::string const& name, int id, int mask)
     ports()->addPort(name, *output_port);
 
     // And register the mapping
-    Mapping mapping = { name, id & mask, mask, output_port };
+    Mapping mapping = { name, id & mask, mask, false, output_port };
     m_mappings.push_back(mapping);
 
     return true;
@@ -87,7 +87,7 @@ bool Task::configureHook()
         RTT::OutputPort<canbus::Message>* new_output_port = new RTT::OutputPort<canbus::Message>(outputport.ports_name);
         ports()->addPort(outputport.ports_name, *new_output_port);
         // register the mapping
-        Mapping mapping = { outputport.ports_name, outputport.id & outputport.mask, outputport.mask, new_output_port };
+        Mapping mapping = { outputport.ports_name, outputport.id & outputport.mask, outputport.mask, true, new_output_port };
         m_mappings.push_back(mapping);
     }
    
@@ -203,10 +203,13 @@ void Task::cleanupHook()
             canbus::CanOutputPort const& outputport(outputports[i]);
             if (it->output->getName() == outputport.ports_name)
             {
+                if (it->remove_on_cleanup)
+                {
                 m_mapping_cache.clear();
                 ports()->removePort(it->output->getName());
                 delete it->output;
                 m_mappings.erase(it);
+                }
             }
         }
     }
