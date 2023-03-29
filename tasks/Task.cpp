@@ -75,7 +75,7 @@ bool Task::configureHook()
     }
 
     // creating dynamic ports
-    outputports = _outputPorts.get();
+    std::vector<canbus::CanOutputPort> outputports = _outputPorts.get();
     for (size_t i = 0; i < outputports.size(); ++i)
     {
         canbus::CanOutputPort const& outputport(outputports[i]);

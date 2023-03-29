@@ -47,7 +47,6 @@ namespace canbus {
 
         base::Time m_can_check_interval;
         base::Time m_stats_interval;
-        std::vector<canbus::CanOutputPort> outputports;
 
     public:
         Task(std::string const& name = "canbus::Task");
