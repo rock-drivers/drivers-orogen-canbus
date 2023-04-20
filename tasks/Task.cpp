@@ -42,7 +42,7 @@ bool Task::watch(std::string const& name, int id, int mask)
     ports()->addPort(name, *output_port);
 
     // And register the mapping
-    Mapping mapping = { name, id & mask, mask, output_port };
+    Mapping mapping = { name, id & mask, mask, false, output_port };
     m_mappings.push_back(mapping);
 
     return true;
@@ -74,6 +74,23 @@ bool Task::configureHook()
         return false;
     }
 
+    // creating dynamic ports
+    std::vector<canbus::CanOutputPort> outputports = _outputPorts.get();
+    for (size_t i = 0; i < outputports.size(); ++i)
+    {
+        canbus::CanOutputPort const& outputport(outputports[i]);
+        if (ports()->getPort(outputport.ports_name))
+        {
+            RTT::log(RTT::Error) << "output port " <<  outputport.ports_name << " is listed more than once in the outputs configuration property" << RTT::endlog();
+            return false;
+        }
+        RTT::OutputPort<canbus::Message>* new_output_port = new RTT::OutputPort<canbus::Message>(outputport.ports_name);
+        ports()->addPort(outputport.ports_name, *new_output_port);
+        // register the mapping
+        Mapping mapping = { outputport.ports_name, outputport.id & outputport.mask, outputport.mask, true, new_output_port };
+        m_mappings.push_back(mapping);
+    }
+   
     m_can_check_interval = base::Time::fromMicroseconds(_checkBusOkInterval.get() * 1000);
     m_stats_interval = base::Time::fromMicroseconds(_statsInterval.get() * 1000);
     return true;
@@ -179,5 +196,17 @@ void Task::cleanupHook()
     m_driver->close();
     delete m_driver;
     m_driver = 0;
+    for (Mappings::const_iterator it = m_mappings.begin(); it != m_mappings.end();)
+    {
+        if (it->remove_on_cleanup)
+        {
+            m_mapping_cache.clear();
+            ports()->removePort(it->output->getName());
+            delete it->output;
+            it = m_mappings.erase(it);
+        }
+        else 
+            ++it;
+    }
     TaskBase::cleanupHook();
 }

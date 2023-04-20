@@ -17,6 +17,15 @@ namespace canbus
         Statistics()
             : msg_tx(0), msg_rx(0), tx(0), rx(0), error_count(0) {}
     };
+
+    struct CanOutputPort
+    {
+        std::string ports_name;
+        std::uint32_t mask;
+        std::uint32_t id;
+        CanOutputPort()
+            : mask(0), id(0) {}
+    };
 }
 #endif
 

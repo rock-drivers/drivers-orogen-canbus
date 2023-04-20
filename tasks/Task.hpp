@@ -26,6 +26,7 @@ namespace canbus {
             std::string name;
             uint32_t id;
             uint32_t mask;
+            bool remove_on_cleanup;
             RTT::OutputPort<canbus::Message>* output;
         };
         typedef std::vector<Mapping> Mappings;
