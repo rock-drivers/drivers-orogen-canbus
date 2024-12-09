@@ -10,9 +10,10 @@
 using namespace canbus;
 
 Task::Task(std::string const& name)
-: TaskBase(name)
-, m_driver(NULL)
+    : TaskBase(name)
+    , m_driver(NULL)
 {
+    _fd_activity_timeout = base::Time::fromMilliseconds(100);
 }
 
 Task::~Task()
@@ -103,7 +104,7 @@ bool Task::startHook()
     if (fd_activity)
     {
         fd_activity->watch(m_driver->getFileDescriptor());
-        fd_activity->setTimeout(100);
+        fd_activity->setTimeout(_fd_activity_timeout.get().toMilliseconds());
     }
 
     if (!m_driver->reset())

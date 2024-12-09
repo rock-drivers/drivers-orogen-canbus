@@ -29,6 +29,11 @@ task_context "Task" do
     property("outputPorts", "std/vector</canbus/CanOutputPort>").
         doc "The component will create the necessary ports at configure time based on the port names that are listed in the configuration file"
 
+    # What timeout value should be set for the underlying FD activity (if fd_driven)
+    #
+    # This should be lower than the statsInterval and checkBusOkInterval
+    property "fd_activity_timeout", "/base/Time"
+
     input_port("in", "/canbus/Message").
         multiplexes.
         needs_reliable_connection.
