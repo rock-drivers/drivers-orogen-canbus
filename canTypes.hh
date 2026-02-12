@@ -2,6 +2,7 @@
 #define CANBUS_TYPES_HH
 
 #include <base/Time.hpp>
+#include <cstdint>
 
 namespace canbus
 {
