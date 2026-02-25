@@ -43,7 +43,8 @@ bool Task::watch(std::string const& name, int id, int mask)
     ports()->addPort(name, *output_port);
 
     // And register the mapping
-    Mapping mapping = { name, id & mask, mask, false, output_port };
+    uint32_t umask = mask;
+    Mapping mapping = { name, id & umask, umask, false, output_port };
     m_mappings.push_back(mapping);
 
     return true;
